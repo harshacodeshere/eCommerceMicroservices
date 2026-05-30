@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>0CEBE341-3E5F-4229-A334-5D4A07DACD2E</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+      <DockerServiceName>userservice</DockerServiceName>
+      <DockerServiceName>productservice</DockerServiceName>
+    <DockerComposeProjectName>microservicesdemo</DockerComposeProjectName>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="docker-compose.yml" />
+    <None Include="docker-compose.override.yml">
+        <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include=".dockerignore" />
+  </ItemGroup>
+
+</Project>

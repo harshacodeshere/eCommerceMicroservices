@@ -1,0 +1,33 @@
+services:
+  productdb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+  
+  usersdb:
+    image: postgres:13
+
+  ordersdb:
+    image: mongo:latest
+
+  products.api:
+    image: ${DOCKER_REGISTRY-}productsapi
+
+  users.api:
+    image: ${DOCKER_REGISTRY-}usersapi    
+
+  orders.api:
+    image: ${DOCKER_REGISTRY-}ordersapi
+
+  redis:
+    image: "redis:latest"
+  
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+  
+  rabbitmq:
+   image: rabbitmq:4.2.1-management
+
+volumes:
+  productdbdata:
+  usersdbdata:
+  ordersdbdata:  
+  redisdata:  

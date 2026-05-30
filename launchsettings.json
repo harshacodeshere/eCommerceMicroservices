@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "docker-compose": {
+      "commandName": "DockerCompose",
+      "composeFile": "./docker-compose.yml",
+      "service": "productservice",
+      "containerUser": "containerUser"
+    }
+  }
+}

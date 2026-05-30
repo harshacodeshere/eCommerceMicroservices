@@ -1,0 +1,106 @@
+services:
+  productdb:
+    container_name: ecomm_productdb
+    environment:
+      MSSQL_SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - productdbdata:/var/opt/mssql
+  
+  usersdb:
+    container_name: ecomm_usersdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Harsha@123
+      POSTGRES_DB: eCommerceUsers
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - usersdbdata:/var/lib/postgresql/data
+
+  ordersdb:
+    container_name: ecomm_ordersdb
+    environment:
+      - MONGODB_HOST=ordersdb
+      - MONGODB_PORT=27017
+      - MONGO_DATABASE=OrdersDatabase
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ordersdbdata:/data/db
+
+  products.api:
+    build:
+      context: .
+      dockerfile: Services/ProductService/eCommProducts.API/Dockerfile
+    ports:
+      - 7000:8080
+    environment:
+      RabbitMQ_HostName: rabbitmq
+      RabbitMQ_UserName: user
+      RabbitMQ_Password: password
+      RabbitMQ_Port: 5672
+      RabbitMQ_ProductsExchange: products.exchange
+    depends_on:
+      - productdb
+
+  users.api:
+    build:
+      context: .
+      dockerfile: Services/UserService/eCommUsers.API/Dockerfile
+    ports:
+      - 8000:8080
+    environment:
+      - POSTGRES_HOST=usersdb
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=eCommerceUsers
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Harsha@123
+    depends_on:
+      - usersdb
+
+  orders.api:
+    build:
+      context: .
+      dockerfile: Services/OrderService/eCommOrders.API/Dockerfile
+    ports:
+      - 9000:8080
+    environment:
+      - RabbitMQ_HostName=rabbitmq
+      - RabbitMQ_UserName=user
+      - RabbitMQ_Password=password
+      - RabbitMQ_Port=5672
+      - RabbitMQ_ProductsExchange=products.exchange
+      - MONGO_HOST=ordersdb
+      - MONGO_PORT=27017
+    depends_on:
+      - ordersdb
+  
+  redis:
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data  
+
+  apigateway:
+    build:
+      context: .
+      dockerfile: Services/OrderService/ApiGateway/Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      - products.api
+      - users.api
+      - orders.api
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
